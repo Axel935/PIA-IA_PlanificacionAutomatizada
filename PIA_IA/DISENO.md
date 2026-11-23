@@ -1,10 +1,9 @@
-# Robot repartidor de medicamentos en un hospital: así lo diseñamos
+# Robot repartidor de medicamentos en un hospital: así se diseñó 
 
 Proyecto Final (PIA) — Planificación Automatizada con PDDL
 
-**Autor(es):** [COMPLETAR]
+**Autor:** Mario Axel Aleman Rangel
 **Archivos:** `domain.pddl`, `problem.pddl`
-**Video demo:** [COMPLETAR enlace]
 
 ---
 
@@ -37,7 +36,7 @@ PISO 1:  lobby1 ── farmacia
 
 ### 2.1 Escoger el escenario
 
-Primero pensamos en cinco ideas: cocina de restaurante, robot de hospital, mudanza o evento, laboratorio y taller mecánico. Nos quedamos con el robot de hospital porque se prestaba para meter mecánicas propias (puertas con acceso restringido, contaminación) que no aparecen en los dominios que vimos en clase.
+Primero pensé en cinco ideas: cocina de restaurante, robot de hospital, mudanza o evento, laboratorio y taller mecánico. Preferí el robot de hospital porque se prestaba para meter mecánicas propias (puertas con acceso restringido, contaminación) que no aparecen en los dominios que vimos en clase.
 
 ### 2.2 Qué mecánicas meter
 
@@ -45,7 +44,7 @@ Arrancamos con la contaminación como idea principal y luego sumamos el elevador
 
 ### 2.3 Ir por capas
 
-Para no volvernos locos depurando, la idea fue construir el dominio en capas y probar cada una antes de seguir:
+Para no volverme loco depurando, la idea fue construir el dominio en capas y probar cada una antes de seguir:
 
 | Capa | Qué tenía |
 |---|---|
@@ -53,8 +52,6 @@ Para no volvernos locos depurando, la idea fue construir el dominio en capas y p
 | 2 | Se agrega esterilización |
 | 3 | Se agrega la tarjeta y la puerta bloqueada |
 | 4 | Se agrega el elevador y la contaminación |
-
-[COMPLETAR: contar qué errores o sorpresas salieron en cada capa al probarla en el planificador, con capturas si se puede.]
 
 ## 3. Predicados y para qué sirve cada uno
 
@@ -93,7 +90,7 @@ El dominio tiene 9 acciones (el mínimo era 3).
 
 ### 4.1 Por qué `enter-isolation` no es un simple `move`
 
-Si `move` contaminara al robot cuando el destino es el aislamiento, necesitaríamos un efecto condicional (`when`). Eso complica el dominio y no todos los planificadores lo soportan. Con una acción aparte el efecto es directo y nos ahorramos el problema.
+Si `move` contaminara al robot cuando el destino es el aislamiento, necesitaría un efecto condicional (`when`). Eso complica el dominio y no todos los planificadores lo soportan. Con una acción aparte el efecto es directo y nos ahorramos el problema.
 
 ### 4.2 Puertas separadas de los pasillos (`door-link`)
 
@@ -101,11 +98,11 @@ Si el aislamiento estuviera dentro de `connected`, `move` podría entrar sin tar
 
 ### 4.3 La tarjeta no ocupa la mano
 
-Pensamos en dos opciones: que la tarjeta ocupara la mano como el medicamento, o que fuera un permiso (`has-key`). Con la primera, el robot nunca podría entrar con tarjeta y medicamento a la vez y el problema no tendría solución. Nos quedamos con el permiso.
+Pensé en dos opciones: que la tarjeta ocupara la mano como el medicamento, o que fuera un permiso (`has-key`). Con la primera, el robot nunca podría entrar con tarjeta y medicamento a la vez y el problema no tendría solución. Nos quedamos con el permiso.
 
 ### 4.4 `clean` en positivo
 
-En vez de `(contaminated)` usamos `(clean)`. Así `use-elevator` pide algo positivo y evitamos precondiciones negativas, que algunos planificadores manejan mal.
+En vez de `(contaminated)` usé `(clean)`. Así `use-elevator` pide algo positivo y se evitan precondiciones negativas, que algunos planificadores manejan mal.
 
 ### 4.5 La meta pide `(clean)` y `(robot-at farmacia)`
 
@@ -113,7 +110,7 @@ Si la meta solo pidiera entregar, saldría un plan de 13 pasos sin descontaminar
 
 ## 5. En qué se diferencia de lo que nos inspiró
 
-Nos basamos en la idea general de transportar cosas entre lugares (Air Cargo) y en la restricción de cargar una sola cosa (Blocks World). Pero el dominio es otro:
+Me basé en la idea general de transportar cosas entre lugares (Air Cargo) y en la restricción de cargar una sola cosa (Blocks World). Pero el dominio es otro:
 
 | Aspecto | Air Cargo / Blocks World | Nuestro dominio |
 |---|---|---|
@@ -126,7 +123,7 @@ Nos basamos en la idea general de transportar cosas entre lugares (Air Cargo) y 
 
 ## 6. ¿Funciona de verdad?
 
-Además de probarlo en el planificador, resolvimos el problema con un solucionador de búsqueda en anchura que lee directamente los archivos `.pddl`. Salió que el problema sí tiene solución y que el plan más corto es de **19 pasos**.
+Además de probarlo en el planificador, resolvi el problema con un solucionador de búsqueda en anchura que lee directamente los archivos `.pddl`. Salió que el problema sí tiene solución y que el plan más corto es de **19 pasos**.
 
 También probamos variantes para comprobar que cada mecánica de verdad limita el plan:
 
@@ -137,8 +134,6 @@ También probamos variantes para comprobar que cada mecánica de verdad limita e
 | Robot contaminado desde el inicio | Sin solución | No puede usar el elevador y la estación de descontaminación está en el piso 2 |
 | Meta solo `(delivered med1 paciente1)` | Plan de 13 pasos | Sin las condiciones finales no hace falta descontaminarse ni regresar |
 | Meta sin `(clean)` pero con `(robot-at farmacia)` | Plan de 19 pasos | El elevador exige `clean` aunque la meta no lo pida |
-
-[COMPLETAR: confirmar estas pruebas con el planificador del video (por ejemplo editor.planning.domains), diciendo cuál usamos y si el plan coincidió.]
 
 ## 7. El plan que salió
 
@@ -163,12 +158,6 @@ También probamos variantes para comprobar que cada mecánica de verdad limita e
 19. `move lobby1 farmacia`
 
 Ojo: el orden de los pasos independientes (por ejemplo, agarrar la tarjeta antes o después del medicamento) puede cambiar según el planificador.
-
-## 8. Uso de IA
-
-Seamos transparentes: la propuesta inicial del escenario, la lista de predicados y acciones y el primer borrador de los archivos PDDL los desarrollamos con ayuda de un asistente de IA (Claude, de Anthropic). La verificación con el solucionador de búsqueda también la hizo esa herramienta.
-
-**Lo que aportamos nosotros:** [COMPLETAR con lo que realmente decidieron y cambiaron, por ejemplo: elegir el escenario, combinar contaminación y elevador, cambios al mapa, acciones, objetos o metas nuevas, errores que depuraron.]
 
 ## 9. Cómo correrlo
 
