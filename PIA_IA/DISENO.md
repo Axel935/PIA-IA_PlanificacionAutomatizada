@@ -159,7 +159,7 @@ También probamos variantes para comprobar que cada mecánica de verdad limita e
 
 Ojo: el orden de los pasos independientes (por ejemplo, agarrar la tarjeta antes o después del medicamento) puede cambiar según el planificador.
 
-## 9. Cómo correrlo
+## 8. Cómo correrlo
 
 1. Abrir [editor.planning.domains](https://editor.planning.domains).
 2. Pegar `domain.pddl` y `problem.pddl`.
